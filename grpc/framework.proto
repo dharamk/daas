@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+message SerialRead {
+    repeated string lines = 1;
+    string device_id = 2;
+    string serial_port = 3;
+    string session_id = 4;
+    string hostagent_id = 5;
+    bool error_set = 6;
+    string error_message = 7;
+}
+
+message SerialDevice {
+    string device_id = 1;
+    string serial_name = 2;
+}
+
+message SerialWrite {
+    SerialDevice device = 1;
+    string line = 2;
+}
+
+// Serial Command Message format
+message SerialCmd {
+    SerialDevice device = 1;
+    enum SERIAL_CMD {
+        SERIAL_CONNECT = 0;
+        SERIAL_DISCONNECT = 1;
+        SERIAL_DEVICE_RESET = 2;
+        SERIAL_RESET = 3;
+        //SERIAL_CHANGE_BAUDRATE = 4;
+    }
+    SERIAL_CMD command = 2;
+    string user_id = 3;
+    //SerialCmdData cmd_data = 4;
+}
+
+message SerialEvent {
+    SerialDevice device = 1;
+    enum SERIAL_EVENT {
+        SERIAL_NOT_AVAILABLE = 0;
+        SERIAL_CONNECTED = 1;
+        SERIAL_DISCONNECTED = 2;
+        SERIAL_RESET_DONE = 3;
+        SERIAL_DEVICE_RESET_DONE = 4;
+    }
+    SERIAL_EVENT event = 2;
+}
+
+message SyncRequest {
+    repeated string device_id = 1;
+}
+
+message DeviceInfo {
+    string device_id = 1;
+    enum Status {
+        DEVICE_FOUND = 0;
+        DEVICE_NOT_FOUND = 1;
+    }
+    Status device_status = 3;
+}
+
+message SyncResponse {
+    string hostagent_id = 1;
+    repeated DeviceInfo devices = 2;
+}
+
+message BlobData {
+    string agent_id = 1;
+    string device_id = 2;
+    bytes blob = 3;
+}
+
+service RemoteSerial {
+    rpc readLines (SerialDevice) returns (SerialRead) {}
+    rpc WriteLine (SerialWrite) returns (SerialRead) {}
+    rpc Invoke (stream SerialCmd) returns (stream SerialEvent) {}
+}
+
+service DeviceAgent {
+    rpc sync (SyncRequest) returns (SyncResponse) {}
+}
+
+service DeviceImageDownload {
+    rpc WriteBlob(stream BlobData) {}
+}
