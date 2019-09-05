@@ -5,14 +5,19 @@ import sys
 import queue as std_queue
 import threading
 
-COMMON_LIBS_PATH = "../common/"
-sys.path.append(COMMON_LIBS_PATH)
 
 from mbed_os_tools.detect.main import create
 from mbed_os_tools.detect.main import mbed_os_support
 from mbed_os_tools.detect.main import mbed_lstools_os_info
 from abstract_device import *
 from abstract_device import DeviceType
+from mbed_device import MbedDevice
+from mock_device import MockDevice
+
+from mock_service import *
+
+COMMON_LIBS_PATH = "../common/"
+sys.path.append(COMMON_LIBS_PATH)
 
 
 MBED_OS_TOOLS_PATH = "../third-party/mbed-os-tools"
@@ -22,14 +27,30 @@ sys.path.append(MBED_OS_TOOLS_PATH)
 
 
 def core_scanner(obj):
+    cached = obj.get_all_devices()
+    tmp = dict()
+
+    # Handle Mock device list
+    mocks = obj.mocks
+    if obj.scan_services[DeviceType.DEVICE_MOCK]:
+        mock_devs_list = mocks.find_devices()
+        # print(mock_devs_list)
+        for mocked in mock_devs_list:
+            tmp[mocked["mock_devid"]] = True
+            if mocked["mock_devid"] in cached:
+                pass
+            else:
+                obj.add_device(mocked["mock_devid"], DeviceType.DEVICE_MOCK, mocked)
+
+        mock_cached_devs = obj.get_all_devices_by_type(DeviceType.DEVICE_MOCK)
+        for c in mock_cached_devs:
+            if c not in tmp:
+                obj.remove_device(c)
+
+    # Handle Mbed Devices
     mbeds = obj.mbeds
     mbed_devs_list = mbeds.find_candidates()
-
-    cached = obj.get_all_devices()
-
     # print(mbed_devs_list)
-
-    tmp = dict()
     for mbed in mbed_devs_list:
         tmp[mbed["target_id_usb_id"]] = True
         if mbed["target_id_usb_id"] in cached:
@@ -81,7 +102,7 @@ def scanner_main_loop(obj):
 
 class DeviceScanner:
 
-    def __init__(self, device_queue=None,mock=False, raw=False):
+    def __init__(self, device_queue=None, mock=False, raw=False):
         self.scan_services = dict()
         self.cached = dict()
 
@@ -91,9 +112,11 @@ class DeviceScanner:
         self.scanner_queue = None
         self.device_queue = device_queue
         self.mbeds = create()
+        self.mocks = create_mocks()
+
 
     def get_all_devices(self):
-        return self.cached
+        return self.cached.keys()
 
     def get_all_devices_by_type(self, dev_type):
         devs = dict()
@@ -130,7 +153,8 @@ class DeviceScanner:
             raise NotImplementedError
 
         # Generate a notification/event that a new Device has been added
-        self.device_queue.put(["Device Added", dev_id])
+        if not self.device_queue:
+            self.device_queue.put(["Device Added", dev_id])
         pass
 
     def remove_device(self, dev_id):
@@ -138,7 +162,8 @@ class DeviceScanner:
             return
 
         self.cached.pop(dev_id)
-        self.device_queue.put(["Device Removed", dev_id])
+        if not self.device_queue:
+            self.device_queue.put(["Device Removed", dev_id])
 
 
     def stop(self):
@@ -173,7 +198,7 @@ if __name__ == '__main__':
 
     dev_queue = Queue()
 
-    s = DeviceScanner(dev_queue)
+    s = DeviceScanner(dev_queue, mock=True)
     s.start()
     count = 0
     while True:

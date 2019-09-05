@@ -5,17 +5,14 @@ import framework_pb2
 
 import serial
 from serial.serialutil import SerialException
-
-class DeviceImageDownloader:
-    def __init__(self):
-        pass
+from agent_scanner import DeviceScanner
 
 
 def handle_serial_connect(server, dev_id):
 
     response = framework_pb2.SerialEvent()
-    scanner = server.get_scanner()
-    device = scanner.get_device()
+    scanner = server.deviceScanner
+    device = scanner.get_device(dev_id)
 
     response.device.device_id = dev_id
 
@@ -29,15 +26,15 @@ def handle_serial_connect(server, dev_id):
     else:
         response.event = framework_pb2.SerialEvent.SERIAL_CONNECTED
     finally:
-        print("Sending Invoke Response ---> Event: {}".format(_response.event))
+        print("Sending Invoke Response ---> Event: {}".format(response.event))
         return response
 
 
 def handle_serial_disconnect(server, dev_id):
 
     response = framework_pb2.SerialEvent()
-    scanner = server.get_scanner()
-    device = scanner.get_device()
+    scanner = server.deviceScanner
+    device = scanner.get_device(dev_id)
 
     response.device.device_id = dev_id
     if not device:
@@ -51,23 +48,34 @@ def handle_serial_disconnect(server, dev_id):
     else:
         response.event = framework_pb2.SerialEvent.SERIAL_DISCONNECTED
     finally:
-        print("Sending Invoke Response ---> Event: {}".format(_response.event))
+        print("Sending Invoke Response ---> Event: {}".format(response.event))
         return response
 
-def handle_serial_reset(server, dev):
-    _response = framework_pb2.SerialEvent()
-    _response.device.device_id = dev
-    _response.event = framework_pb2.SerialEvent.SERIAL_RESET_DONE
 
-    return _response
+def handle_serial_reset(server, dev):
+    response = framework_pb2.SerialEvent()
+    response.device.device_id = dev
+    response.event = framework_pb2.SerialEvent.SERIAL_RESET_DONE
+
+    return response
 
 
 def handle_device_reset(server, dev):
 
-    _response = framework_pb2.SerialEvent()
-    _response.device.device_id = dev
-    _response.event = framework_pb2.SerialEvent.SERIAL_RESET_DONE
-    return _response
+    response = framework_pb2.SerialEvent()
+    response.device.device_id = dev
+    response.event = framework_pb2.SerialEvent.SERIAL_RESET_DONE
+    return response
+
+
+def create_DeviceInfo_body(syncResponse, dev, found=True):
+    obj = syncResponse.devices.add()
+    obj.device_id = dev
+    obj.device_status = \
+        (framework_pb2.DeviceInfo.DEVICE_NOT_FOUND,
+         framework_pb2.DeviceInfo.DEVICE_FOUND)[found]
+    return obj
+
 
 class RemoteSerialCommandHandler:
 
@@ -107,52 +115,29 @@ class RemoteSerialServicer(framework_pb2_grpc.RemoteSerialServicer):
 
     def readLines(self, request, context):
 
-        dev = request.device_id
-        print('Got ReadLInes Command -->{}'.format(dev))
-        dev_obj = self.server.get_device(dev)
+        dev_id = request.device_id
+        # print('Got ReadLInes Command -->{}'.format(dev_id))
+        dev_obj = self.server.get_device(dev_id)
 
-        _lines = framework_pb2.SerialRead(error_set=False,device_id=request.device_id)
+        _lines = framework_pb2.SerialRead(error_set=False, device_id=dev_id)
         if dev_obj is None:
             # Handle invalid 'readline' - figure out a way of saying
             # DEVICE NOT FOUND
             _lines.error_set = True
             _lines.error_message = 'DEVICE NOT FOUND'
             return _lines
-
-        uart = dev_obj.get('comm_info').get('uart')
-        if uart is None:
-            _lines.error_set = True
-            _lines.error_message = 'UART COMM NOT FOUND'
-            return _lines
-
-        serial_obj = uart['serial_obj']
-        if serial_obj is None:
-            _lines.error_set = True
-            _lines.error_message = 'UART SERIAL NOT FOUND'
-            return _lines
-        print('--> Serial Object found')
-
-        if serial_obj.isOpen() is False:
-            print("Found Serial-Port[{}] in CLOSED state...Opening it".format(serial_obj.name))
-            try:
-                serial_obj.open()
-            except SerialException as e:
-                print("Could not Open Serial-Port {}".format(e))
-                _lines.error_set = True
-                _lines.error_message = 'SERIAL OPEN ERROR'
-                return _lines
         try:
-            read_lines = do_serial_read(serial_obj)
-            print("Reading lines:{}".format(read_lines))
+            read_lines = dev_obj.stdout()
+            # print("Reading lines:{}".format(read_lines))
             _lines.lines.extend(read_lines)
-
             _lines.hostagent_id = self.server.host_id
-        except SerialException as e:
+        except Exception as e:
             print("Could not Open Serial-Port {}".format(e))
             _lines.error_set = True
             _lines.error_message = 'SERIAL READ ERROR'
 
         return _lines
+
 
 class DeviceAgentServicer(framework_pb2_grpc.DeviceAgentServicer):
 
@@ -160,7 +145,7 @@ class DeviceAgentServicer(framework_pb2_grpc.DeviceAgentServicer):
         self.server = server
 
     def sync(self, request, context):
-        print('Got Sync Request for: {}.'.format(request.device_id))
+        print('Got Sync Request for: {}'.format(request.device_id))
 
         response = framework_pb2.SyncResponse()
         response.hostagent_id = self.server.get_host_id()
@@ -180,78 +165,55 @@ class DeviceAgentServicer(framework_pb2_grpc.DeviceAgentServicer):
         print(response)
         return response
 
-class LocalDeviceScanner:
-    COMM_TYPE_SERIAL = 0x1
 
-    def __init__(self, devices):
-        if devices is None:
-            raise ValueError
+class DeviceImageUploader(framework_pb2_grpc.DeviceImageUploadServicer):
+    def __init__(self, server):
+        self.server = server
 
-        self.devices = devices
+    def store_dev_image(self, dev_id, bin_image, image_type="hex"):
+        from pathlib import Path
+        # Go to home directory
+        try:
+            home_dir = Path.home()
+            AGENT_ROOT_DIR = ".agent"
+            home_dir = home_dir / AGENT_ROOT_DIR
+            IMAGE_PATH_SUFFIX = "tmp/images"
+            home_dir = home_dir / IMAGE_PATH_SUFFIX
+            Path.exists
+            file_name = dev_id + "." + image_type
+            print(file_name)
+            home_dir = home_dir / file_name
+            # ~/.agent/tmp/images/<dev_id>.hex
+            print(home_dir)
 
-    def start(self):
-        pass
+            with open(str(home_dir), 'wb') as binary_file:
+                binary_file.write(bin_image)
 
-    def add_device(self, name, device_id, ports, comm_type=COMM_TYPE_SERIAL):
-        if not device_id:
-            raise ValueError('Empty Device ID not allowed')
-        devices = self.devices.keys()
+        except Exception as e:
+            raise e
+        else:
+            return home_dir
+            pass
 
-        if device_id in devices:
-            print("Already present Device-ID %s" % device_id)
-            return self.devices[device_id]
+        return home_dir
 
-        # Create a device Object structure to hold all information
-        # related to this device
+    def upload(self, request, context):
+        print("Got Upload DeviceImage Reqeuest for: {}".format(request.device_id))
+        print("Binary data length: {}".format(len(request.blob)))
+        rsp = framework_pb2.UploadResponse()
+        rsp.device_id = request.device_id
+        dev = self.server.get_device(request.device_id)
 
-        self.devices[device_id]=dict()
+        if dev:
+            image_path = self.store_dev_image(request.device_id, request.blob)
+            ret = dev.download_image(image_path)
+            if ret:
+                rsp.download_status = framework_pb2.UploadResponse.DOWNLOAD_COMPLETED
+        else:
+            rsp.download_status = framework_pb2.UploadResponse.DOWNLOAD_DEVICE_NOT_FOUND
 
-        device_obj = self.devices[device_id]
-        device_obj["name"] = name
-        device_obj["id"] = device_id
-        device_obj["comm_info"] = dict()
+        return rsp
 
-        uart = dict()
-        uart["serial_port"] = ports[1]
-        uart["jtag"] = ports[0]
-        uart["vid"] = None
-        uart["pid"] = None
-        uart['settings'] = None
-        device_obj["comm_info"]["uart"] = uart
-
-        session_info = dict()
-        session_info["session_id"] = None
-        session_info["user_id"] = None
-        session_info["lease_time"] = None
-        session_info["is_downloading"] = False
-
-        device_obj["session_info"] = session_info
-
-        device_obj["reboot_count"] = 0
-        device_obj["plugged_in_time"] = 0
-        device_obj["download_count"] = 0
-
-        device_obj["heartbeat_enabled"] = False
-
-        print(device_obj)
-
-        if not device_obj:
-            raise ValueError("can't create Device Object with ID %s" % device_id)
-
-
-        # return device_obj
-
-    def remove_device(self, device_id):
-        if not device_id:
-            raise ValueError('Empty Device ID not allowed')
-
-        device_obj = self.devices.pop(device_id, None)
-        if not device_obj:
-            print("[{}] Device-ID {} not found. Already removed?".format(self.name, device_id))
-
-    def get_dev_serials(self):
-        for dev in self.devices.keys():
-            ser_obj = self.devices[dev]['serial']
 
 class AgentService:
 
@@ -267,19 +229,20 @@ class AgentService:
 
         self.address = ip_address
 
-        self.devices = dict()
-
         self.server_port = port
 
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
         self.remoteSync = DeviceAgentServicer(self)
         self.remoteSerial = RemoteSerialServicer(self)
-        self.deviceScanner = LocalDeviceScanner(self.devices)
+        self.deviceScanner = DeviceScanner()
+        self.remoteImageUploader = DeviceImageUploader(self)
 
         framework_pb2_grpc.add_DeviceAgentServicer_to_server(self.remoteSync, self.server)
         framework_pb2_grpc.add_RemoteSerialServicer_to_server(self.remoteSerial, self.server)
+        framework_pb2_grpc.add_DeviceImageUploadServicer_to_server(self.remoteImageUploader, self.server)
         self.server.add_insecure_port('[::]:'+str(port))
+        print("AgentService Object Created --")
 
     def start(self):
         self.deviceScanner.start()
@@ -289,16 +252,20 @@ class AgentService:
         self.server.stop(0)
 
     def get_device_list(self):
-        return [v for v in self.devices.keys()]
+        return [v for v in self.deviceScanner.get_all_devices()]
 
     def get_device(self, device_id):
-        return self.devices.get(device_id)
+        return self.deviceScanner.get_device(device_id)
 
     def has_device(self, device_id):
-        if self.devices.get(device_id) is None:
+        if self.deviceScanner.get_device(device_id) is None:
             return False
         else:
             return True
+
+    def get_host_id(self):
+        return self.host_id
+
 
 if __name__ == "__main__":
     default_port = 12121
@@ -336,18 +303,18 @@ if __name__ == "__main__":
 
     print(args.device_info)
 
-    hostagent_server = AgentService('localhost', args.port, str(args.id))
+    agent = AgentService('localhost', args.port, str(args.id))
 
-    hostagent_server.deviceScanner.add_device(args.device_info[0],
+    agent.deviceScanner.add_device(args.device_info[0],
                                               args.device_info[1],
                                               [args.device_info[2],
                                               args.device_info[3]])
     # add_dummy_devices(hostagent_server)
-    hostagent_server.start()
+    agent.start()
     try:
         while True:
             time.sleep(10000)
     except KeyboardInterrupt:
         print('[Server] Keyboard interrupted')
-        hostagent_server.stop()
+        agent.stop()
 

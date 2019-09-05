@@ -3,9 +3,10 @@ import sys
 import time
 
 sys.path.append("..")
-
+COMMON_LIBS_PATH = "../../common/"
 GRPC_PROTOBUF_PATH = "../../grpc"
 sys.path.append(GRPC_PROTOBUF_PATH)
+sys.path.append(COMMON_LIBS_PATH)
 
 import agent_main as agent
 
