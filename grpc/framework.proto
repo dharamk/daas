@@ -65,10 +65,23 @@ message SyncResponse {
     repeated DeviceInfo devices = 2;
 }
 
-message BlobData {
+message DeviceImage {
     string agent_id = 1;
     string device_id = 2;
     bytes blob = 3;
+    bytes checksum = 4; // MD5 or SHA checksum of Device image
+}
+
+message UploadResponse {
+    string device_id = 1;
+    enum DownloadStatus {
+        DOWNLOAD_COMPLETED =  0;
+        DOWNLOAD_DEVICE_NOT_FOUND = 1;
+        DOWNLOAD_IMAGE_CHECKSUM_NOT_VALID = 2;
+        DOWNLOAD_DEVICE_ERROR = 3;
+    }
+
+    DownloadStatus download_status = 2;
 }
 
 service RemoteSerial {
@@ -81,6 +94,6 @@ service DeviceAgent {
     rpc sync (SyncRequest) returns (SyncResponse) {}
 }
 
-service DeviceImageDownload {
-    rpc WriteBlob(stream BlobData) {}
+service DeviceImageUpload {
+    rpc upload(DeviceImage) returns (UploadResponse) {}
 }

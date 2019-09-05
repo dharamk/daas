@@ -120,3 +120,45 @@ def add_DeviceAgentServicer_to_server(servicer, server):
   generic_handler = grpc.method_handlers_generic_handler(
       'DeviceAgent', rpc_method_handlers)
   server.add_generic_rpc_handlers((generic_handler,))
+
+
+class DeviceImageUploadStub(object):
+  # missing associated documentation comment in .proto file
+  pass
+
+  def __init__(self, channel):
+    """Constructor.
+
+    Args:
+      channel: A grpc.Channel.
+    """
+    self.upload = channel.unary_unary(
+        '/DeviceImageUpload/upload',
+        request_serializer=framework__pb2.DeviceImage.SerializeToString,
+        response_deserializer=framework__pb2.UploadResponse.FromString,
+        )
+
+
+class DeviceImageUploadServicer(object):
+  # missing associated documentation comment in .proto file
+  pass
+
+  def upload(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+
+def add_DeviceImageUploadServicer_to_server(servicer, server):
+  rpc_method_handlers = {
+      'upload': grpc.unary_unary_rpc_method_handler(
+          servicer.upload,
+          request_deserializer=framework__pb2.DeviceImage.FromString,
+          response_serializer=framework__pb2.UploadResponse.SerializeToString,
+      ),
+  }
+  generic_handler = grpc.method_handlers_generic_handler(
+      'DeviceImageUpload', rpc_method_handlers)
+  server.add_generic_rpc_handlers((generic_handler,))

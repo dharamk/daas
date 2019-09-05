@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x0f\x66ramework.proto\"\x97\x01\n\nSerialRead\x12\r\n\x05lines\x18\x01 \x03(\t\x12\x11\n\tdevice_id\x18\x02 \x01(\t\x12\x13\n\x0bserial_port\x18\x03 \x01(\t\x12\x12\n\nsession_id\x18\x04 \x01(\t\x12\x14\n\x0chostagent_id\x18\x05 \x01(\t\x12\x11\n\terror_set\x18\x06 \x01(\x08\x12\x15\n\rerror_message\x18\x07 \x01(\t\"6\n\x0cSerialDevice\x12\x11\n\tdevice_id\x18\x01 \x01(\t\x12\x13\n\x0bserial_name\x18\x02 \x01(\t\":\n\x0bSerialWrite\x12\x1d\n\x06\x64\x65vice\x18\x01 \x01(\x0b\x32\r.SerialDevice\x12\x0c\n\x04line\x18\x02 \x01(\t\"\xc7\x01\n\tSerialCmd\x12\x1d\n\x06\x64\x65vice\x18\x01 \x01(\x0b\x32\r.SerialDevice\x12&\n\x07\x63ommand\x18\x02 \x01(\x0e\x32\x15.SerialCmd.SERIAL_CMD\x12\x0f\n\x07user_id\x18\x03 \x01(\t\"b\n\nSERIAL_CMD\x12\x12\n\x0eSERIAL_CONNECT\x10\x00\x12\x15\n\x11SERIAL_DISCONNECT\x10\x01\x12\x17\n\x13SERIAL_DEVICE_RESET\x10\x02\x12\x10\n\x0cSERIAL_RESET\x10\x03\"\xe5\x01\n\x0bSerialEvent\x12\x1d\n\x06\x64\x65vice\x18\x01 \x01(\x0b\x32\r.SerialDevice\x12(\n\x05\x65vent\x18\x02 \x01(\x0e\x32\x19.SerialEvent.SERIAL_EVENT\"\x8c\x01\n\x0cSERIAL_EVENT\x12\x18\n\x14SERIAL_NOT_AVAILABLE\x10\x00\x12\x14\n\x10SERIAL_CONNECTED\x10\x01\x12\x17\n\x13SERIAL_DISCONNECTED\x10\x02\x12\x15\n\x11SERIAL_RESET_DONE\x10\x03\x12\x1c\n\x18SERIAL_DEVICE_RESET_DONE\x10\x04\" \n\x0bSyncRequest\x12\x11\n\tdevice_id\x18\x01 \x03(\t\"|\n\nDeviceInfo\x12\x11\n\tdevice_id\x18\x01 \x01(\t\x12)\n\rdevice_status\x18\x03 \x01(\x0e\x32\x12.DeviceInfo.Status\"0\n\x06Status\x12\x10\n\x0c\x44\x45VICE_FOUND\x10\x00\x12\x14\n\x10\x44\x45VICE_NOT_FOUND\x10\x01\"B\n\x0cSyncResponse\x12\x14\n\x0chostagent_id\x18\x01 \x01(\t\x12\x1c\n\x07\x64\x65vices\x18\x02 \x03(\x0b\x32\x0b.DeviceInfo2\x8d\x01\n\x0cRemoteSerial\x12)\n\treadLines\x12\r.SerialDevice\x1a\x0b.SerialRead\"\x00\x12(\n\tWriteLine\x12\x0c.SerialWrite\x1a\x0b.SerialRead\"\x00\x12(\n\x06Invoke\x12\n.SerialCmd\x1a\x0c.SerialEvent\"\x00(\x01\x30\x01\x32\x34\n\x0b\x44\x65viceAgent\x12%\n\x04sync\x12\x0c.SyncRequest\x1a\r.SyncResponse\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x0f\x66ramework.proto\"\x97\x01\n\nSerialRead\x12\r\n\x05lines\x18\x01 \x03(\t\x12\x11\n\tdevice_id\x18\x02 \x01(\t\x12\x13\n\x0bserial_port\x18\x03 \x01(\t\x12\x12\n\nsession_id\x18\x04 \x01(\t\x12\x14\n\x0chostagent_id\x18\x05 \x01(\t\x12\x11\n\terror_set\x18\x06 \x01(\x08\x12\x15\n\rerror_message\x18\x07 \x01(\t\"6\n\x0cSerialDevice\x12\x11\n\tdevice_id\x18\x01 \x01(\t\x12\x13\n\x0bserial_name\x18\x02 \x01(\t\":\n\x0bSerialWrite\x12\x1d\n\x06\x64\x65vice\x18\x01 \x01(\x0b\x32\r.SerialDevice\x12\x0c\n\x04line\x18\x02 \x01(\t\"\xc7\x01\n\tSerialCmd\x12\x1d\n\x06\x64\x65vice\x18\x01 \x01(\x0b\x32\r.SerialDevice\x12&\n\x07\x63ommand\x18\x02 \x01(\x0e\x32\x15.SerialCmd.SERIAL_CMD\x12\x0f\n\x07user_id\x18\x03 \x01(\t\"b\n\nSERIAL_CMD\x12\x12\n\x0eSERIAL_CONNECT\x10\x00\x12\x15\n\x11SERIAL_DISCONNECT\x10\x01\x12\x17\n\x13SERIAL_DEVICE_RESET\x10\x02\x12\x10\n\x0cSERIAL_RESET\x10\x03\"\xe5\x01\n\x0bSerialEvent\x12\x1d\n\x06\x64\x65vice\x18\x01 \x01(\x0b\x32\r.SerialDevice\x12(\n\x05\x65vent\x18\x02 \x01(\x0e\x32\x19.SerialEvent.SERIAL_EVENT\"\x8c\x01\n\x0cSERIAL_EVENT\x12\x18\n\x14SERIAL_NOT_AVAILABLE\x10\x00\x12\x14\n\x10SERIAL_CONNECTED\x10\x01\x12\x17\n\x13SERIAL_DISCONNECTED\x10\x02\x12\x15\n\x11SERIAL_RESET_DONE\x10\x03\x12\x1c\n\x18SERIAL_DEVICE_RESET_DONE\x10\x04\" \n\x0bSyncRequest\x12\x11\n\tdevice_id\x18\x01 \x03(\t\"|\n\nDeviceInfo\x12\x11\n\tdevice_id\x18\x01 \x01(\t\x12)\n\rdevice_status\x18\x03 \x01(\x0e\x32\x12.DeviceInfo.Status\"0\n\x06Status\x12\x10\n\x0c\x44\x45VICE_FOUND\x10\x00\x12\x14\n\x10\x44\x45VICE_NOT_FOUND\x10\x01\"B\n\x0cSyncResponse\x12\x14\n\x0chostagent_id\x18\x01 \x01(\t\x12\x1c\n\x07\x64\x65vices\x18\x02 \x03(\x0b\x32\x0b.DeviceInfo\"R\n\x0b\x44\x65viceImage\x12\x10\n\x08\x61gent_id\x18\x01 \x01(\t\x12\x11\n\tdevice_id\x18\x02 \x01(\t\x12\x0c\n\x04\x62lob\x18\x03 \x01(\x0c\x12\x10\n\x08\x63hecksum\x18\x04 \x01(\x0c\"\xe8\x01\n\x0eUploadResponse\x12\x11\n\tdevice_id\x18\x01 \x01(\t\x12\x37\n\x0f\x64ownload_status\x18\x02 \x01(\x0e\x32\x1e.UploadResponse.DownloadStatus\"\x89\x01\n\x0e\x44ownloadStatus\x12\x16\n\x12\x44OWNLOAD_COMPLETED\x10\x00\x12\x1d\n\x19\x44OWNLOAD_DEVICE_NOT_FOUND\x10\x01\x12%\n!DOWNLOAD_IMAGE_CHECKSUM_NOT_VALID\x10\x02\x12\x19\n\x15\x44OWNLOAD_DEVICE_ERROR\x10\x03\x32\x8d\x01\n\x0cRemoteSerial\x12)\n\treadLines\x12\r.SerialDevice\x1a\x0b.SerialRead\"\x00\x12(\n\tWriteLine\x12\x0c.SerialWrite\x1a\x0b.SerialRead\"\x00\x12(\n\x06Invoke\x12\n.SerialCmd\x1a\x0c.SerialEvent\"\x00(\x01\x30\x01\x32\x34\n\x0b\x44\x65viceAgent\x12%\n\x04sync\x12\x0c.SyncRequest\x1a\r.SyncResponse\"\x00\x32>\n\x11\x44\x65viceImageUpload\x12)\n\x06upload\x12\x0c.DeviceImage\x1a\x0f.UploadResponse\"\x00\x62\x06proto3')
 )
 
 
@@ -109,6 +109,36 @@ _DEVICEINFO_STATUS = _descriptor.EnumDescriptor(
   serialized_end=881,
 )
 _sym_db.RegisterEnumDescriptor(_DEVICEINFO_STATUS)
+
+_UPLOADRESPONSE_DOWNLOADSTATUS = _descriptor.EnumDescriptor(
+  name='DownloadStatus',
+  full_name='UploadResponse.DownloadStatus',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='DOWNLOAD_COMPLETED', index=0, number=0,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='DOWNLOAD_DEVICE_NOT_FOUND', index=1, number=1,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='DOWNLOAD_IMAGE_CHECKSUM_NOT_VALID', index=2, number=2,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='DOWNLOAD_DEVICE_ERROR', index=3, number=3,
+      serialized_options=None,
+      type=None),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=1131,
+  serialized_end=1268,
+)
+_sym_db.RegisterEnumDescriptor(_UPLOADRESPONSE_DOWNLOADSTATUS)
 
 
 _SERIALREAD = _descriptor.Descriptor(
@@ -452,6 +482,97 @@ _SYNCRESPONSE = _descriptor.Descriptor(
   serialized_end=949,
 )
 
+
+_DEVICEIMAGE = _descriptor.Descriptor(
+  name='DeviceImage',
+  full_name='DeviceImage',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='agent_id', full_name='DeviceImage.agent_id', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='device_id', full_name='DeviceImage.device_id', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='blob', full_name='DeviceImage.blob', index=2,
+      number=3, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='checksum', full_name='DeviceImage.checksum', index=3,
+      number=4, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=951,
+  serialized_end=1033,
+)
+
+
+_UPLOADRESPONSE = _descriptor.Descriptor(
+  name='UploadResponse',
+  full_name='UploadResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='device_id', full_name='UploadResponse.device_id', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='download_status', full_name='UploadResponse.download_status', index=1,
+      number=2, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+    _UPLOADRESPONSE_DOWNLOADSTATUS,
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1036,
+  serialized_end=1268,
+)
+
 _SERIALWRITE.fields_by_name['device'].message_type = _SERIALDEVICE
 _SERIALCMD.fields_by_name['device'].message_type = _SERIALDEVICE
 _SERIALCMD.fields_by_name['command'].enum_type = _SERIALCMD_SERIAL_CMD
@@ -462,6 +583,8 @@ _SERIALEVENT_SERIAL_EVENT.containing_type = _SERIALEVENT
 _DEVICEINFO.fields_by_name['device_status'].enum_type = _DEVICEINFO_STATUS
 _DEVICEINFO_STATUS.containing_type = _DEVICEINFO
 _SYNCRESPONSE.fields_by_name['devices'].message_type = _DEVICEINFO
+_UPLOADRESPONSE.fields_by_name['download_status'].enum_type = _UPLOADRESPONSE_DOWNLOADSTATUS
+_UPLOADRESPONSE_DOWNLOADSTATUS.containing_type = _UPLOADRESPONSE
 DESCRIPTOR.message_types_by_name['SerialRead'] = _SERIALREAD
 DESCRIPTOR.message_types_by_name['SerialDevice'] = _SERIALDEVICE
 DESCRIPTOR.message_types_by_name['SerialWrite'] = _SERIALWRITE
@@ -470,6 +593,8 @@ DESCRIPTOR.message_types_by_name['SerialEvent'] = _SERIALEVENT
 DESCRIPTOR.message_types_by_name['SyncRequest'] = _SYNCREQUEST
 DESCRIPTOR.message_types_by_name['DeviceInfo'] = _DEVICEINFO
 DESCRIPTOR.message_types_by_name['SyncResponse'] = _SYNCRESPONSE
+DESCRIPTOR.message_types_by_name['DeviceImage'] = _DEVICEIMAGE
+DESCRIPTOR.message_types_by_name['UploadResponse'] = _UPLOADRESPONSE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 SerialRead = _reflection.GeneratedProtocolMessageType('SerialRead', (_message.Message,), dict(
@@ -528,6 +653,20 @@ SyncResponse = _reflection.GeneratedProtocolMessageType('SyncResponse', (_messag
   ))
 _sym_db.RegisterMessage(SyncResponse)
 
+DeviceImage = _reflection.GeneratedProtocolMessageType('DeviceImage', (_message.Message,), dict(
+  DESCRIPTOR = _DEVICEIMAGE,
+  __module__ = 'framework_pb2'
+  # @@protoc_insertion_point(class_scope:DeviceImage)
+  ))
+_sym_db.RegisterMessage(DeviceImage)
+
+UploadResponse = _reflection.GeneratedProtocolMessageType('UploadResponse', (_message.Message,), dict(
+  DESCRIPTOR = _UPLOADRESPONSE,
+  __module__ = 'framework_pb2'
+  # @@protoc_insertion_point(class_scope:UploadResponse)
+  ))
+_sym_db.RegisterMessage(UploadResponse)
+
 
 
 _REMOTESERIAL = _descriptor.ServiceDescriptor(
@@ -536,8 +675,8 @@ _REMOTESERIAL = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=952,
-  serialized_end=1093,
+  serialized_start=1271,
+  serialized_end=1412,
   methods=[
   _descriptor.MethodDescriptor(
     name='readLines',
@@ -578,8 +717,8 @@ _DEVICEAGENT = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=1,
   serialized_options=None,
-  serialized_start=1095,
-  serialized_end=1147,
+  serialized_start=1414,
+  serialized_end=1466,
   methods=[
   _descriptor.MethodDescriptor(
     name='sync',
@@ -594,5 +733,29 @@ _DEVICEAGENT = _descriptor.ServiceDescriptor(
 _sym_db.RegisterServiceDescriptor(_DEVICEAGENT)
 
 DESCRIPTOR.services_by_name['DeviceAgent'] = _DEVICEAGENT
+
+
+_DEVICEIMAGEUPLOAD = _descriptor.ServiceDescriptor(
+  name='DeviceImageUpload',
+  full_name='DeviceImageUpload',
+  file=DESCRIPTOR,
+  index=2,
+  serialized_options=None,
+  serialized_start=1468,
+  serialized_end=1530,
+  methods=[
+  _descriptor.MethodDescriptor(
+    name='upload',
+    full_name='DeviceImageUpload.upload',
+    index=0,
+    containing_service=None,
+    input_type=_DEVICEIMAGE,
+    output_type=_UPLOADRESPONSE,
+    serialized_options=None,
+  ),
+])
+_sym_db.RegisterServiceDescriptor(_DEVICEIMAGEUPLOAD)
+
+DESCRIPTOR.services_by_name['DeviceImageUpload'] = _DEVICEIMAGEUPLOAD
 
 # @@protoc_insertion_point(module_scope)
