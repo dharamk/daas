@@ -40,7 +40,8 @@ def core_scanner(obj):
             if mocked["mock_devid"] in cached:
                 pass
             else:
-                obj.add_device(mocked["mock_devid"], DeviceType.DEVICE_MOCK, mocked)
+                obj.add_device(mocked["mock_devid"],
+                               DeviceType.DEVICE_MOCK, mocked)
 
         mock_cached_devs = obj.get_all_devices_by_type(DeviceType.DEVICE_MOCK)
         for c in mock_cached_devs:
@@ -60,7 +61,8 @@ def core_scanner(obj):
             pass
         else:
             # A new device found by mbedls...add it to the cached list
-            obj.add_device(mbed["target_id_usb_id"], DeviceType.DEVICE_MBED, mbed)
+            obj.add_device(mbed["target_id_usb_id"],
+                           DeviceType.DEVICE_MBED, mbed)
 
     mbed_cached_devs = obj.get_all_devices_by_type(DeviceType.DEVICE_MBED)
     # print(mbed_cached_devs)
@@ -68,9 +70,11 @@ def core_scanner(obj):
         if c not in tmp:
             obj.remove_device(c)
 
+
 def parse_and_handle_command(loop, cmd):
     if cmd == "stop_scan":
         return
+
 
 def scanner_main_loop(obj):
     while True:
@@ -82,14 +86,14 @@ def scanner_main_loop(obj):
         """
         try:
             command = obj.scanner_queue.get_nowait()
-        except std_queue.Empty as e:
+        except std_queue.Empty:
             pass
         else:
             print(command)
             # If we receive a 'Halt' command - scanner is about to terminate
             # clean things up and get out of the loop
             if command == "stop_scan":
-                break;
+                break
             # else - parse and handle commands appropriately
             parse_and_handle_command(obj, command)
 
@@ -113,7 +117,6 @@ class DeviceScanner:
         self.device_queue = device_queue
         self.mbeds = create()
         self.mocks = create_mocks()
-
 
     def get_all_devices(self):
         return self.cached.keys()
@@ -149,7 +152,7 @@ class DeviceScanner:
 
         if dev_type == DeviceType.DEVICE_MBED:
             self.cached[dev_id] = MbedDevice(dev_id, _obj)
-        elif dev_type == DeviceType.DEVICE_RAW or dev_type ==DeviceType.DEVICE_MOCK:
+        elif dev_type == DeviceType.DEVICE_RAW or dev_type == DeviceType.DEVICE_MOCK:
             raise NotImplementedError
 
         # Generate a notification/event that a new Device has been added
@@ -165,11 +168,10 @@ class DeviceScanner:
         if not self.device_queue:
             self.device_queue.put(["Device Removed", dev_id])
 
-
     def stop(self):
-        self.scanner_queue.put("stop_scan");
+        self.scanner_queue.put("stop_scan")
         self.scanner.join()
-        self.scanner.terminate()
+        # self.scanner.terminate()
 
     def invoke_command(self, cmd):
         if self.scanner.is_alive():
@@ -193,6 +195,7 @@ def test_device_open_close(scanner, dev_id):
         print(e)
     except OSError as d:
         print(d)
+
 
 if __name__ == '__main__':
 

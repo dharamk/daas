@@ -3,10 +3,12 @@ import grpc
 import framework_pb2_grpc
 import framework_pb2
 
-import serial
+import requests
+
 from serial.serialutil import SerialException
 from agent_scanner import DeviceScanner
-
+from agent_settings import *
+from agent_auth import AgentAuthentication
 
 def handle_serial_connect(server, dev_id):
 
@@ -26,7 +28,7 @@ def handle_serial_connect(server, dev_id):
     else:
         response.event = framework_pb2.SerialEvent.SERIAL_CONNECTED
     finally:
-        print("Sending Invoke Response ---> Event: {}".format(response.event))
+        pr0int("Sending Invoke Response ---> Event: {}".format(response.event))
         return response
 
 
@@ -217,7 +219,7 @@ class DeviceImageUploader(framework_pb2_grpc.DeviceImageUploadServicer):
 
 class AgentService:
 
-    def __init__(self, ip_address, port, host_id, name=None):
+    def __init__(self, ip_address, port, host_id, name=None, auth=None):
         # Hold a dictionary for all the attached devices
         if not (host_id and ip_address):
             raise ValueError('Empty HostAgent ID or IP-Address not allowed')
@@ -230,26 +232,40 @@ class AgentService:
         self.address = ip_address
 
         self.server_port = port
-
+        self.server_started = False
+        self.scanner_started = False
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
         self.remoteSync = DeviceAgentServicer(self)
         self.remoteSerial = RemoteSerialServicer(self)
         self.deviceScanner = DeviceScanner()
         self.remoteImageUploader = DeviceImageUploader(self)
+        self.auth = auth
 
         framework_pb2_grpc.add_DeviceAgentServicer_to_server(self.remoteSync, self.server)
         framework_pb2_grpc.add_RemoteSerialServicer_to_server(self.remoteSerial, self.server)
         framework_pb2_grpc.add_DeviceImageUploadServicer_to_server(self.remoteImageUploader, self.server)
-        self.server.add_insecure_port('[::]:'+str(port))
-        print("AgentService Object Created --")
+        self.server.add_insecure_port('[::]:'+ str(port))
+
+        print("Preparing Agent Instance {}:{}".format(self.address,self.server_port))
+
+        # self.db = AgentDBServiceFirestoreAdminPrivilege(self)
+        # self.db_agent_doc = AgentDocument(self)
 
     def start(self):
         self.deviceScanner.start()
         self.server.start()
+        self.server_started = True
+        self.scanner_started = True
+        print("All services started Ok.")
+
 
     def stop(self):
+        self.deviceScanner.stop()
         self.server.stop(0)
+        self.server_started = False
+        self.scanner_started = False
+
 
     def get_device_list(self):
         return [v for v in self.deviceScanner.get_all_devices()]
@@ -265,6 +281,55 @@ class AgentService:
 
     def get_host_id(self):
         return self.host_id
+
+    def http_post_connection_status(self):
+        if self.auth and self.auth.is_authenticated:
+            body = {
+                'idToken': self.auth.token_id,
+                'aid': EMWEBED_AGENT_APP_SETTINGS['aid'],
+                'grpc_port': self.server_port,
+                'ip_address': self.address
+            }
+
+            ep = EMWEBED_SERVER_AGENT_ENDPOINTS['connection_status']
+            full_url = EMWEBED_SERVER_URI + ep
+            try:
+                response = requests.post(full_url, json=body)
+                response.raise_for_status()
+            except HTTPError as http_err:
+                print('HTTP error occured: {}'.format(http_err))
+            except Exception as e:
+                print('Other error: {}'.format(e))
+            else:
+                print('Success!!')
+        else:
+            raise Exception("User is not logged-in")
+
+
+    def http_post_device_list(self):
+        if self.auth and self.auth.is_authenticated:
+            body = {
+                'idToken': self.auth.token_id,
+                'aid': EMWEBED_AGENT_APP_SETTINGS['aid'],
+            }
+
+            devs = self.get_device_list()
+            if not devs:
+                body['devices']['detected'] = devs
+            try:
+                response = requests.post(full_url, json=body)
+                response.raise_for_status()
+            except HTTPError as http_err:
+                print('HTTP error occured: {}'.format(http_err))
+            except Exception as e:
+                print('Other error: {}'.format(e))
+            else:
+                print('Success!!')
+        else:
+            raise Exception("User is not logged-in")
+
+    def http_post_service_status(self):
+        pass
 
 
 if __name__ == "__main__":

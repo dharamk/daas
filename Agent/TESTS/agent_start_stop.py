@@ -8,14 +8,13 @@ GRPC_PROTOBUF_PATH = "../../grpc"
 sys.path.append(GRPC_PROTOBUF_PATH)
 sys.path.append(COMMON_LIBS_PATH)
 
-import agent_main as agent
+import agent_client as agent
 
 if __name__ == "__main__":
     import hashlib
     default_port = 12121
     agent_id = hashlib.sha1(b"test").hexdigest()
     print(agent_id)
-
     ag = agent.AgentService('localhost', default_port, agent_id)
     ag.start()
     print(ag.get_device_list())
