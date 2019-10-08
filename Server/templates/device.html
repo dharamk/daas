@@ -1,0 +1,62 @@
+{% extends "manager/base.html" %}
+{% block content %}
+    <!-- div class="card">
+        <div class="card-header">
+            {{device.name}}
+        </div>
+    <img src="..." class="card-img-top" alt="...">
+    <div class="card-body">
+    <h5 class="card-title">{{ device.id }}</h5>
+    <p class="card-text">{{ device.description }}</p>
+    <a href="#" class="btn btn-primary">Connect Serial</a>
+    <a href="#" class="btn btn-primary">Know more...</a>
+  </div>
+</div -->
+<script>
+        $(document).ready(function(){
+            $("#serial-connect").click(function(){
+             $.get("/manager/serial_connect", function(data){
+                $("#serial_logging").text(data);
+             }, "text");
+            });
+    });
+    </script>
+<div class="card text-center">
+  <div class="card-header">
+      <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="pills-summary-tab" data-toggle="pill" href="#pills-summary" role="tab" aria-controls="pills-summary" aria-selected="true">Device Summary</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-serial-tab" data-toggle="pill" href="#pills-serial" role="tab" aria-controls="pills-serial" aria-selected="false">Serial</a>
+        </li>
+      </ul>
+    <div class="tab-content" id="pills-tabContent">
+      <div class="tab-pane fade show active" id="pills-summary" role="tabpanel" aria-labelledby="pills-summary-tab">
+        <div class="card-body">
+          {% if device %}
+            <h4 class="card-title">{{device.name}}({{device.id}})</h4>
+            <h5 class="card-text">{{ device.description }}, Available: Yes</h5>
+          {% else %}
+            <h5 class="card-title">No Device found? </h5>
+          {% endif %}
+        </div>
+      </div>
+      <div class="tab-pane fade" id="pills-serial" role="tabpanel" aria-labelledby="pills-serial-tab">
+        <h2 class="card-title">Serial Connection</h2>
+        <div class="card-body">
+          <a href="serial_connect" class="btn btn-primary btn-lg" id="serial-connect">Connect Serial...</a>
+          <!-- a class="btn btn-primary btn-lg" href="{% url 'device_serial_connect' device.id %}" id="serial-connect">Connect Serial...</a -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <div id="serial_logging">
+
+  </div>
+  <div id="input_command">
+    <textarea name="user_input" cols="80" rows="1"></textarea>
+  </div>
+{% endblock %}
+

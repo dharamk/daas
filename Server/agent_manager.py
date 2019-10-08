@@ -292,6 +292,7 @@ class AgentManager:
         self.device_map = DeviceTable()
         self.host_map = AgentMap()
         self.remote_serial_reader = RemoteSerialReader(self)
+        self.running = None
 
     def _start(self):
         agents = get_agent_list()
@@ -390,7 +391,8 @@ class AgentManager:
             agent_id = "all"
 
         # Hack Hack Hack to quickly try the rpc
-        dev_id = '19091301f3080e1602f3080e00000000000000002e127069'
+        # dev_id = '19091301f3080e1602f3080e00000000000000002e127069'
+
         agent_id = 'a94a8fe5ccb19ba61c4c0873d391e987982fbbd3'
         image_path = "image.hex"
         with open(image_path, "rb") as binary_file:

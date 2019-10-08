@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+<script>
+        $(document).ready(function(){
+            $("#find_device").click(function(){
+             $.get("/manager/showdevices", function(data){
+                $("#device_list").html(data);
+             }, "html");
+            });
+
+            $("#show_agents").click(function(){
+             $.get("/manager/showhosts", function(data){
+                $("#host_list").html(data);
+             }, "html");
+            });
+    });
+    </script>
+
+    <div class="jumbotron">
+      <h2 class="display-4">Hello,Visitor!</h2>
+      <p class="lead">{{ welcome_msg }}</p>
+      <hr class="my-4">
+      <a class="btn btn-primary btn-lg" href="/discover-more" role="button">Discover more...</a>
+      &nbsp;&nbsp;&nbsp;
+      <a class="btn btn-primary btn-lg btn-raised" href="/userlogin" role="button">Sign In...</a>
+    </div>
+
+    <!-- h1><center>{{welcome_msg}}</center></h1 -->
+    <div><center>
+        <button id="find_device" type="button" class="btn btn-primary">Find a Device</button>
+
+        <!-- button id="find_device" type="button">Find a Device</button -->
+        <button id="share_device" type="button" class="btn btn-info">Share your Device</button>
+        <button id="show_agents" type="button" class="btn btn-primary">Show HostAgent list</button>
+    </center></div>
+    <div id="devices">
+        <h2>Devices List</h2>
+        <div id="device_list"><li>No Devices found</li></div>
+    </div>
+    <div id="hosts">
+        <h2>Host List</h2>
+        <div id="host_list"><li>No Hosts found</li></div>
+    </div>
+
+    <div id="main_agent_table" class="container-fluid">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Agent-ID</th>
+            <th scope="col">Agent Name</th>
+            <th scope="col">IP-address</th>
+            <th scope="col">Port</th>
+            <th scope="col">URL</th>
+          </tr>
+        </thead>
+          {% if agents %}
+          {% for agent in agents %}
+            <tr>
+              <td>{{ agent.agent_id }} </td>
+              <td>{{ agent.name }} </td>
+              <td>{{ agent.primary_ip_address }} </td>
+              <td>{{ agent.primary_port }} </td>
+              <td>{{ agent.url }}</td>
+            </tr>
+          {% endfor %}
+          {% endif %}
+      </table>
+
+    <div id="main_device_table" class="container-fluid">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Device-ID</th>
+            <th scope="col">Host</th>
+            <th scope="col">Group</th>
+            <th scope="col">User</th>
+            <th scope="col">Controls</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+{% endblock %}
+
+
+
+

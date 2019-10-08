@@ -1,0 +1,7 @@
+{% block hostagent_table %}
+<ul>
+    {% for host in agent_list %}
+    <li><h4> <a href="{% url 'hostagent' host.agent_id %}">{{ host.name }}</h4></li>
+    {% endfor %}
+</ul>
+{% endblock %}

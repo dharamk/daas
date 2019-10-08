@@ -1,0 +1,40 @@
+{
+    "id": "unique agent id",
+    "name": "agent user friendly name",
+    "user-id": "which user-id it is logged in with",
+    "status": "online | offline | all-devices-busy",
+    "ip-address": "agent ip-address",
+    "port": "port-number on which the server can access any service which it might be hosting",
+    "agent-host-os-type": "windows | macos | unix",
+    "agent-client-sw-version": "release-id/version-id of the agent software/tool",
+    "device-info": {
+        "dev-ids": ["device-id-1", "device-id-2", "device-id-3"],
+        "device-id-1": {
+            "name": "Device 1 user-friendly name",
+            "Platform-type": "mbed-os | nonmbed-os | wiced | nordic",
+            "status": "offline | online | busy/in-use",
+            "session-id": "session id value",
+        },
+    },
+},
+
+{
+    "name": "user friendly name of the device",
+    "status": "available or busy/in-use",
+    "description": "A brief summary of the device - what it can do and can't do..",
+    "manufacturer": "manufacturer name",
+    "owner-info": "agent-id or user-id - a device can be owned by any agent coming under single user-id",
+
+    "current-agent": "current agent id",
+    "current-user": "current user using the device",
+    "current-session": "current-session-id",
+    "current-image-id": "Image/Firmware which is running on the device",
+
+    "platform-type": "mbed-os | wiced | raspberry | arduino | virtual/mocked",
+    "capabilitie": {
+        "hardware": {},
+        "software": {},
+        "platform": {},
+    },
+}
+

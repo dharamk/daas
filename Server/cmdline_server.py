@@ -107,14 +107,14 @@ if __name__ == '__main__':
         help='<Image path to download>',
         default=None)
 
-    server = base_server.DaaSServer.get_daas_server()
+    server = base_server.EmwebedServer.get_server()
     if not server:
-        server = base_server.DaaSServer()
-        base_server.DaaSServer.set_daas_server(server)
+        server = base_server.EmwebedServer()
+        base_server.DaaSServer.set_server(server)
 
     while (True):
         try:
-            raw_line = input("DaaS >>")
+            raw_line = input("cmd >>")
             raw_line.rstrip("\r\n")
             if not raw_line:
                 continue

@@ -1,0 +1,7 @@
+{% block device_table %}
+<ul>
+    {% for device in device_table %}
+    <li><h4> <a href="{% url 'device_page' device.id %}">{{ device.id }}</h4></li>
+    {% endfor %}
+</ul>
+{% endblock %}
