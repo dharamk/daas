@@ -432,6 +432,26 @@ class FirestoreAdminClient(db_interface.AbstractDbClient):
             'port': port,
         })
 
+    def verify_token(self, token_id, current_user=None):
+        if not token_id or not current_user:
+            raise ValueError
+        try:
+            decoded_token = auth.verify_id_token(token_id, check_revoked=True)
+            uid = decoded_token['uid']
+            if current_user:
+                if uid is not current_user:
+                    raise ValueError
+        except auth.RevokedIdTokenError:
+            # Token revoked, inform the user to reauthenticate or signOut()
+            # return status and whether it needs to sign-in again
+            return (False, True)
+
+        except auth.InvalidIdTokenError:
+            # Token is invalid
+            return {False, False}
+
+        return (True, False)
+
     def update_device_status(self, device_id, device_dict=None, detected=False):
         pass
 
@@ -454,6 +474,8 @@ class FirestoreAdminClient(db_interface.AbstractDbClient):
 
         all_agents = self.agents.collections().where('ip-address', '==', ip_address)
         pass
+
+
 
 
 def test_create_delete_agents(db):

@@ -1,6 +1,6 @@
 #!/bin/python3
 
-from flask import Flask, abort, request, Blueprint, render_template
+from flask import Flask, abort, request, Blueprint, render_template, redirect, url_for
 
 from emwebed_server import EmwebedServer
 
@@ -12,6 +12,15 @@ from agent_onboarding import AgentOnboardingService
 
 
 # @app.route('/user/create_agent', methods=['POST'])
+
+def verify_token_or_redirect(idToken):
+
+    if result['status'] == 'success':
+        # return status and whether it needs to sign-in again
+        return (True)
+    else:
+        return (False, True)
+
 def index():
     return render_template('main.html')
 
@@ -23,10 +32,21 @@ def create_agent():
         abort(401)
 
     token = json_body['idToken']
-    db = EmwebedServer.get_db()
-    db.verify_token(token)
-    onboarder = EmwebedServer.get_agent_onboarding_service()
 
+    db = EmwebedServer.get_db()
+    onboarder = EmwebedServer.get_agent_onboarding_service()
+    success, reauth = db.verify_token(token)
+    if success:
+        # redirect to 'create_agent.html' page and let user enter Agent-details
+        # return render_template('create_agent_form.html')
+        pass
+    else:
+        if reauth:
+            # tell user to sign-out and reauthenticate
+            # return render_template('notify_user_idtoken_signout.html')
+            pass
+        # otherwise - invalid token
+        abort(401)
     pass
 
 
@@ -173,11 +193,18 @@ def do_user_login():
     return render_template('login.html')
 
 
+def submit_login():
+    return redirect(url_for('index'))
+
+
 def register_agent_views(app):
+    app.add_url_rule('/submit/login', 'submit_login',
+                     submit_login, methods=['GET', 'POST'])
+
     app.add_url_rule('/', 'index', index, methods=['GET'])
 
     app.add_url_rule('/userlogin', 'user_login',
-                     do_user_login, methods=['GET'])
+                     do_user_login, methods=['GET', 'POST'])
 
     app.add_url_rule('/verifyAgent', 'do_agent_verification',
                      do_agent_verification, methods=['GET'])
