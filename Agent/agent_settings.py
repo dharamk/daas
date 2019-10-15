@@ -32,8 +32,8 @@ EMWEBED_AGENT_FIREBASE_APP_SETTINGS = {
 EMWEBED_SERVER_URI = 'http://127.0.0.1:5000/'
 
 EMWEBED_SERVER_AGENT_ENDPOINTS = {
-    "login": 'agent/user/login',
-    "logout": 'agent/user/logout',
+    "login": 'agent/auth/signin',
+    "logout": 'agent/auth/signout',
     "connection_status": 'agent/status/connection',
     "service_status": 'agent/status/service',
     "device_list": 'agent/status/devicelist',

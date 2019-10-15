@@ -440,7 +440,7 @@ class FirestoreAdminClient(db_interface.AbstractDbClient):
             uid = decoded_token['uid']
             if current_user:
                 if uid is not current_user:
-                    raise ValueError
+                    raise ValueError('Token does not belong to User')
         except auth.RevokedIdTokenError:
             # Token revoked, inform the user to reauthenticate or signOut()
             # return status and whether it needs to sign-in again
